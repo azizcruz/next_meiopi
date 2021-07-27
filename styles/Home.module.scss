@@ -113,6 +113,51 @@
   margin-left: 0.5rem;
 }
 
+div.posts {
+  overflow-y: scroll;
+  overflow-x: scroll !important;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  margin-bottom: -10px;
+  height: 100%;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+div.posts .post {
+  transition: 0.3s opacity;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  color: black;
+  padding: 0.5rem 1rem 10px 1rem;
+}
+div.posts .post:nth-child(5n + 4) {
+  background-color: #00c853;
+}
+
+div.posts .post:nth-child(5n + 3) {
+  background-color: #536dfe;
+}
+
+div.posts .post:nth-child(5n + 2) {
+  background-color: #ff9f1c;
+}
+div.posts .post:nth-child(5n + 1) {
+  background-color: #f44336;
+}
+div.posts .post:nth-child(5n) {
+  background-color: #64b5f6;
+}
+
+/* div.posts:active > div {
+  opacity: 0.3;
+  transition-delay: 0.5s;
+}
+div.posts > div:active {
+  opacity: 1;
+} */
+
 @media (max-width: 600px) {
   .grid {
     width: 100%;
