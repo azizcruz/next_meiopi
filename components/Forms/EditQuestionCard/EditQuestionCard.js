@@ -1,5 +1,3 @@
-import { IconButton } from "@chakra-ui/button";
-import { Box, Flex } from "@chakra-ui/layout";
 import { useCookies } from "react-cookie";
 import {
   Image,
@@ -20,8 +18,10 @@ import {
   FormLabel,
   Tooltip,
   Spinner,
+  IconButton,
+  Box,
+  Flex,
 } from "@chakra-ui/react";
-import { FiPlus, BiEdit } from "react-icons/all";
 import React, { useState, useEffect } from "react";
 import "./../../../styles/QuestionFormsStyles.module.scss";
 import "react-widgets/styles.css";
@@ -31,8 +31,7 @@ import { useStoreState, useStoreActions } from "easy-peasy";
 import _ from "lodash";
 import serialize from "form-serialize";
 import * as yup from "yup";
-import { useJwt } from "react-jwt";
-
+import { BiEdit } from "react-icons/bi";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as api from "../../../api-services/api";
 
@@ -358,7 +357,7 @@ export default function EditQuestionCard(props) {
                     </Text>
                   )}
                   {generatePollOptions().map((option, key) => {
-                    return option;
+                    return <Box key={key}>{option}</Box>;
                   })}
                   {errors?.path === "option" && (
                     <Text

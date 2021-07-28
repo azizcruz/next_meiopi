@@ -6,6 +6,7 @@ import {
   ModalBody,
   Button,
   useDisclosure,
+  ModalFooter,
   Textarea,
   Box,
   useToast,

@@ -1,11 +1,11 @@
 import { IconButton } from "@chakra-ui/button";
 import { Box, Flex } from "@chakra-ui/layout";
 import { Text, Tooltip, useToast } from "@chakra-ui/react";
-import { BsArrowsAngleExpand, BiAddToQueue } from "react-icons/all";
+import { BsArrowsAngleExpand } from "react-icons/bs";
 import React, { useState, useRef, useEffect } from "react";
 import "./../../../styles/QuestionFormsStyles.module.scss";
 import EditQuestionCard from "./../../Forms/EditQuestionCard/EditQuestionCard";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useStoreState, useStoreActions } from "easy-peasy";
 import "animate.css";
 import Moment from "react-moment";
@@ -13,15 +13,14 @@ import Linkify from "linkifyjs/react";
 import LinkifyOptions from "./../../../utils/Linkify/LinkifyOptions";
 import Poll from "react-polls";
 import ProfileModal from "../../ProfileModal/ProfileModal";
-import { useHistory } from "react-router-dom";
 import OpenedCommentsButton from "../OpenedOpinionsButton/OpenedOpinionsButton";
 import AddToFollowingsButton from "../AddToFollowingButton/AddToFollowingButton";
+import styles from "../../../styles/Home.module.scss";
 
-export default function QuestionCard(props) {
+function QuestionCard(props) {
   const [backgroundColor, setBackgroundColor] = useState("");
 
   const toast = useToast();
-  const history = useHistory();
 
   const { fetchFilteredPosts, votePoll } = useStoreActions(
     (actions) => actions
@@ -123,7 +122,7 @@ export default function QuestionCard(props) {
   return (
     <>
       <Box
-        className={"post paper"}
+        className={styles.opinion}
         id={props.postId}
         onTouchStartCapture={(e) => {
           detectQuestionCardBG();
@@ -172,16 +171,16 @@ export default function QuestionCard(props) {
             />
 
             <Link
-              to={() =>
-                `/post/${props.postId}/${props.slug}?bgColor=${backgroundColor}`
-              }
+              href={`/questions/${props.postId}/${props.slug}?bgColor=${backgroundColor}`}
             >
-              <IconButton
-                fontSize={["xs", "sm", "md", "lg"]}
-                minW={["25px", "40px"]}
-                h={["25px", "40px"]}
-                icon={<BsArrowsAngleExpand />}
-              />
+              <a>
+                <IconButton
+                  fontSize={["xs", "sm", "md", "lg"]}
+                  minW={["25px", "40px"]}
+                  h={["25px", "40px"]}
+                  icon={<BsArrowsAngleExpand />}
+                />
+              </a>
             </Link>
           </Box>
         </Box>
@@ -240,3 +239,5 @@ export default function QuestionCard(props) {
     </>
   );
 }
+
+export default QuestionCard;

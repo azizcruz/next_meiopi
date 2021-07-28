@@ -6,7 +6,8 @@ import { useMutation, useQuery, QueryClient } from "react-query";
 import * as api from "../../../api-services/api";
 import QuestionCard from "../QuestionCard/QuestionCard";
 
-import "../../../styles/Home.module.scss";
+import styles from "../../../styles/Home.module.scss";
+import QuestionsListLoading from "../../LoadingSekeletons/QuestionsListLoading";
 
 function QuestionsList(props) {
   const queryClient = new QueryClient();
@@ -54,7 +55,7 @@ function QuestionsList(props) {
     enabled: !!ipData,
     onSuccess: (data) => {
       queryClient.setQueryData("hashedIp", data.hashedIp);
-      queryClient.setQueryData("ipData", "");
+      console.log(queryClient.getQueryData("hashedIp"));
     },
   });
 
@@ -66,11 +67,7 @@ function QuestionsList(props) {
     }
   }, [ipData]);
   if (isLoading) {
-    return (
-      <Center>
-        <Spinner size="lg" mt={"20%"} />
-      </Center>
-    );
+    return <QuestionsListLoading />;
   }
 
   if (isError) {
@@ -83,36 +80,34 @@ function QuestionsList(props) {
   }
 
   return (
-    <Box className={"home-wrapper"}>
-      <>
-        <Box className={"posts"}>
-          {/* <TransitionGroup component={testTrans}> */}
-          {data &&
-            data.docs.map((post, key) => {
-              return (
-                // <CSSTransition key={post._id} timeout={1000} classNames="item">
-                <QuestionCard
-                  // followingQuestions={followingQuestions}
-                  key={post._id}
-                  content={post.content}
-                  slug={post.slug}
-                  postId={post._id}
-                  tags={post.tags}
-                  key={post._id}
-                  commentsLength={post.comments.length}
-                  createdAt={post.createdAt}
-                  hasPoll={post.hasPoll}
-                  poll={post.hasPoll ? post.poll : false}
-                  user={post.user}
-                  socket={props.socket}
-                />
-                // </CSSTransition>
-              );
-            })}
-          {/* </TransitionGroup> */}
-        </Box>
-      </>
-    </Box>
+    <>
+      <Box className={styles.opinions}>
+        {/* <TransitionGroup component={testTrans}> */}
+        {data &&
+          data.docs.map((post, key) => {
+            return (
+              // <CSSTransition key={post._id} timeout={1000} classNames="item">
+              <QuestionCard
+                // followingQuestions={followingQuestions}
+                key={post._id}
+                content={post.content}
+                slug={post.slug}
+                postId={post._id}
+                tags={post.tags}
+                key={post._id}
+                commentsLength={post.comments.length}
+                createdAt={post.createdAt}
+                hasPoll={post.hasPoll}
+                poll={post.hasPoll ? post.poll : false}
+                user={post.user}
+                socket={props.socket}
+              />
+              // </CSSTransition>
+            );
+          })}
+        {/* </TransitionGroup> */}
+      </Box>
+    </>
   );
 }
 

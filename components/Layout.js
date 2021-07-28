@@ -15,7 +15,7 @@ export default function Layout({ children }) {
       <StoreProvider store={store}>
         <ChakraProvider theme={theme}>
           <Header />
-          <Container>{children}</Container>
+          <Container maxW="container.xl">{children}</Container>
         </ChakraProvider>
       </StoreProvider>
     </>

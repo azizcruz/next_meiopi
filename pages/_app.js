@@ -1,4 +1,4 @@
-import "../styles/globals.css";
+import "../styles/globals.scss";
 import Layout from "../components/Layout";
 import socketIOClient from "socket.io-client";
 import { QueryClient, QueryClientProvider } from "react-query";

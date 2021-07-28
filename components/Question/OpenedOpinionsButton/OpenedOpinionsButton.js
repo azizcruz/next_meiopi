@@ -1,6 +1,6 @@
 import { Button, useDisclosure, usePrevious } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { IoIosChatboxes } from "react-icons/all";
+import { IoIosChatboxes } from "react-icons/io";
 import OpenedCommentsModal from "../OpenedOpinionsModal/OpenedOpinionsModal";
 import abbrNum from "../../../utils/abbrNum";
 import "animate.css";

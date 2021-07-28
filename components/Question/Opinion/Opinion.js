@@ -10,13 +10,7 @@ import {
   useToast,
   Button,
 } from "@chakra-ui/react";
-import {
-  AiTwotoneEdit,
-  FaRegHandshake,
-  AiFillCaretDown,
-  AiFillCaretUp,
-  FaHandshake,
-} from "react-icons/all";
+import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 import ReplyForm from "./../../Forms/ReplyForm/ReplyForm";
 import { useStoreState, useStoreActions } from "easy-peasy";
 import Reply from "./../Reply/Reply";
@@ -33,9 +27,7 @@ export default function Opinion(props) {
   const queryClient = useQueryClient();
   const { isOpen, onToggle } = useDisclosure();
   const { upVoteComment } = useStoreActions((actions) => actions);
-  const user = useAuthUser();
   const toast = useToast();
-  const isAuthenticated = useIsAuthenticated();
 
   const {
     isLoading,
@@ -96,10 +88,10 @@ export default function Opinion(props) {
     const hashedIp = queryClient.getQueryData("hashedIp");
     try {
       if (hashedIp || isAuthenticated()) {
-        submitAgreeWith({
-          commentId: props.commentId,
-          userIpOrId: isAuthenticated() ? user().userId : hashedIp,
-        });
+        // submitAgreeWith({
+        //   commentId: props.commentId,
+        //   userIpOrId: isAuthenticated() ? user().userId : hashedIp,
+        // });
       }
     } catch (error) {
       toast({

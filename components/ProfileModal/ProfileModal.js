@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useStoreActions, useStoreState } from "easy-peasy";
+import { useRouter } from "next/router";
 import {
   Modal,
   ModalOverlay,
@@ -17,7 +18,9 @@ import {
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
-import { AiFillQuestionCircle, FaHandshake } from "react-icons/all";
+import { FaHandshake } from "react-icons/fa";
+import { AiFillQuestionCircle } from "react-icons/ai";
+
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as api from "../../api-services/api";
 
@@ -37,7 +40,7 @@ function ProfileModal(props) {
       enabled: isOpen,
     }
   );
-  const history = useHistory();
+  const router = useRouter();
   const toast = useToast();
 
   if (isError) {
@@ -163,7 +166,7 @@ function ProfileModal(props) {
                           cursor={"pointer"}
                           onClick={() => {
                             if (comment.post) {
-                              history.push(
+                              router.push(
                                 `/post/${comment.post._id}/${comment.post.slug}/?from=user-opinions&opinion-id=${comment._id}`
                               );
                             }

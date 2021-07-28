@@ -90,7 +90,7 @@ export default function OpenedOpinionsModal(props) {
                 {data?.length > 0 ? (
                   data.map((comment, key) => {
                     return (
-                      <Comment
+                      <Opinion
                         key={key}
                         commentContent={comment.content}
                         commentReplies={comment.replies}
@@ -114,7 +114,7 @@ export default function OpenedOpinionsModal(props) {
             )}
           </ModalBody>
           <ModalFooter>
-            <CommentForm
+            <OpinionForm
               backgroundColor={"white"}
               color={"black"}
               postId={props.postId}

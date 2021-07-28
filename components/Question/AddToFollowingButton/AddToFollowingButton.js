@@ -1,6 +1,8 @@
 import { AlertDialog, IconButton, Tooltip } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
-import { BiAddToQueue, BsCheckBox } from "react-icons/all";
+import { BiAddToQueue } from "react-icons/bi";
+import { BsCheckBox } from "react-icons/bs";
+
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as api from "../../../api-services/api";
 import { useStoreActions, useStoreState } from "easy-peasy";
