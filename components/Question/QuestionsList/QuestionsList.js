@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Box, Center, Spinner, useToast } from "@chakra-ui/react";
 import Head from "next/head";
 import Axios from "axios";
-import { useMutation, useQuery, QueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as api from "../../../api-services/api";
 import QuestionCard from "../QuestionCard/QuestionCard";
 
@@ -10,7 +10,7 @@ import styles from "../../../styles/Home.module.scss";
 import QuestionsListLoading from "../../LoadingSekeletons/QuestionsListLoading";
 
 function QuestionsList(props) {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
 
   useEffect(async () => {
     // Refetch posts when new post is added

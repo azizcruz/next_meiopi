@@ -1,18 +1,22 @@
 import "../styles/globals.scss";
+import React from "react";
 import Layout from "../components/Layout";
-import socketIOClient from "socket.io-client";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
-let socket = socketIOClient("http://localhost:3000");
+import { Hydrate } from "react-query/hydration";
 
-const queryClient = new QueryClient();
+import { ReactQueryDevtools } from "react-query/devtools";
+
+import socket from "../lib/socketIOInit";
 
 function MyApp({ Component, pageProps }) {
+  const [queryClient] = React.useState(() => new QueryClient());
   return (
     <Layout>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
-        <Component {...pageProps} socket={socket} />
+        <Hydrate state={pageProps.dehydratedState}>
+          <Component {...pageProps} socket={socket} />
+        </Hydrate>
       </QueryClientProvider>
     </Layout>
   );
