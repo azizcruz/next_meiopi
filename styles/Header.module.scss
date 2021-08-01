@@ -1,0 +1,18 @@
+.menu-btn {
+  border-radius: 8px;
+
+  &:hover {
+    background-color: #2a4365;
+    transition: all 0.2s ease-in-out;
+    color: #fff;
+  }
+}
+
+.filter-title-button {
+  cursor: pointer;
+  &:hover {
+    .close {
+      color: red;
+    }
+  }
+}

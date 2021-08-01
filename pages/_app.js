@@ -11,14 +11,14 @@ import socket from "../lib/socketIOInit";
 function MyApp({ Component, pageProps }) {
   const [queryClient] = React.useState(() => new QueryClient());
   return (
-    <Layout>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <Layout>
         <ReactQueryDevtools />
         <Hydrate state={pageProps.dehydratedState}>
           <Component {...pageProps} socket={socket} />
         </Hydrate>
-      </QueryClientProvider>
-    </Layout>
+      </Layout>
+    </QueryClientProvider>
   );
 }
 
