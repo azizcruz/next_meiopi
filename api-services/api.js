@@ -60,6 +60,10 @@ export const fetchOpinions = (payload) =>
   api.get(`/v1/posts/${payload.postId}/post/comment`).then((res) => res.data);
 
 // User api
+export const login = (payload) =>
+  api.post(`/v1/auth/login`, payload).then((res) => res.data);
+export const logout = (payload) =>
+  api.get(`/v1/users/${payload.userId}`).then((res) => res.data);
 export const fetchUser = (payload) =>
   api.get(`/v1/users/${payload.userId}`).then((res) => res.data);
 

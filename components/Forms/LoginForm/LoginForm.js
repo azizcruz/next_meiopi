@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   FormErrorMessage,
@@ -16,7 +16,10 @@ import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useStoreState, useStoreActions } from "easy-peasy";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import * as api from "../../../api-services/api";
 import ResetPasswordLink from "./../ResetForm/ResetPasswordLink";
+import cookie from "react-cookies";
 
 const schema = yup.object().shape({
   username: yup.string().max(8).required(),
@@ -24,6 +27,7 @@ const schema = yup.object().shape({
 });
 
 export default function LoginForm(props) {
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -35,7 +39,38 @@ export default function LoginForm(props) {
   });
 
   const toast = useToast();
-  const login = useStoreActions((actions) => actions.login);
+
+  const {
+    isLoading,
+    mutate: login,
+    isError,
+  } = useMutation((payload) => api.login(payload), {
+    onSuccess: (data) => {
+      reset({});
+
+      cookie.save("signInUser", {
+        username: data.user.username,
+        token: `Bearer ${data.tokens.access.token}`,
+        refresh: data.tokens.refresh.token,
+      });
+
+      toast({
+        title: "Welcome back",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    },
+  });
+
+  if (isError) {
+    toast({
+      title: "Something went wrong, try again later",
+      status: "error",
+      duration: 2000,
+      isClosable: true,
+    });
+  }
 
   const [isLogging, setIsLogging] = useState(false);
 
@@ -44,40 +79,16 @@ export default function LoginForm(props) {
   let canSubmit = username && password;
 
   const onSubmit = async (data) => {
-    try {
-      setIsLogging(true);
-      const res = await login(data);
-      // Sign In
-      reset({});
-      toast({
-        title: "You are now signed in",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-      });
-
-      props.onSignIn();
-    } catch (error) {
-      console.log(error);
-      let title = error.request
-        ? JSON.parse(error.request.response).message.includes("Incorrect")
-          ? JSON.parse(error.request.response).message
-          : "Something went wrong, try again later"
-        : "Something went wrong, try again later";
-      setIsLogging(false);
-
-      toast({
-        title: title,
-        status: "error",
-        duration: 2000,
-        isClosable: true,
-      });
-    }
+    login(data);
+    props.onSignIn();
   };
 
+  useEffect(() => {
+    console.log(cookie.load("signInUser"));
+  }, []);
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} id={"login-form"}>
       <Flex direction="column">
         {/* register your input into the hook by invoking the "register" function */}
         <Input

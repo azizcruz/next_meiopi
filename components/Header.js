@@ -100,7 +100,7 @@ export default function Header() {
 
         <FollowingQuestions />
 
-        {!true ? (
+        {true ? (
           <Nav
             title={"Login"}
             icon={<FiLogIn color={"#ff9f1c"} display={"inline"} />}
@@ -110,7 +110,7 @@ export default function Header() {
         ) : (
           ""
         )}
-        {!true ? (
+        {true ? (
           <Nav
             title={"Sign up"}
             icon={<FiUserPlus color={"#ff9f1c"} display={"inline"} />}
@@ -120,7 +120,7 @@ export default function Header() {
         ) : (
           ""
         )}
-        {true ? (
+        {!true ? (
           <Nav
             title={"Logout"}
             icon={<FiLogOut color={"#ff9f1c"} display={"inline"} />}
