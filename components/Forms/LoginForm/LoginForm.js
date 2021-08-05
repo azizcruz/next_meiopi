@@ -49,13 +49,14 @@ export default function LoginForm(props) {
       reset({});
 
       cookie.save("signInUser", {
+        id: data.user.id,
         username: data.user.username,
         token: `Bearer ${data.tokens.access.token}`,
         refresh: data.tokens.refresh.token,
       });
 
       toast({
-        title: "Welcome back",
+        title: `Welecome back ${data.user.username}`,
         status: "success",
         duration: 2000,
         isClosable: true,
@@ -83,9 +84,8 @@ export default function LoginForm(props) {
     props.onSignIn();
   };
 
-  useEffect(() => {
-    console.log(cookie.load("signInUser"));
-  }, []);
+  useEffect(() => {}, []);
+
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
     <form onSubmit={handleSubmit(onSubmit)} id={"login-form"}>

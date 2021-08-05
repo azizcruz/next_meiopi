@@ -69,3 +69,10 @@ export const fetchUser = (payload) =>
 
 // Tags api
 export const getTags = () => api.get(`/v1/posts/tags`).then((res) => res.data);
+
+// Poll api
+export const votePoll = (payload) => {
+  let postId = payload.postId;
+  delete payload.postId;
+  api.put(`/v1/posts/${postId}/poll/vote`, payload).then((res) => res.data);
+};

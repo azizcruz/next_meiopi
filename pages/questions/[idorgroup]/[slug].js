@@ -1,9 +1,22 @@
 import React from "react";
 import { useRouter } from "next/router";
 
-function QuestionDetail() {
+import QuestionDetail from "../../../components/Question/QuestionDetail/QuestionDetail";
+
+function QuestionDetailPage(props) {
   const router = useRouter();
-  return <div>Question detail</div>;
+  const { idorgroup, slug } = router.query;
+  const hash = router.asPath.split("#")[1];
+
+  return (
+    <QuestionDetail
+      id={idorgroup}
+      slug={slug}
+      socket={props.socket}
+      hash={`#${hash}`}
+      router={router}
+    />
+  );
 }
 
-export default QuestionDetail;
+export default QuestionDetailPage;

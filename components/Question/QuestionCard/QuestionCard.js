@@ -16,6 +16,11 @@ import ProfileModal from "../../ProfileModal/ProfileModal";
 import OpenedCommentsButton from "../OpenedOpinionsButton/OpenedOpinionsButton";
 import AddToFollowingsButton from "../AddToFollowingButton/AddToFollowingButton";
 import styles from "../../../styles/Home.module.scss";
+import {
+  isAuthenticated,
+  userData,
+  getVisitorHashedIp,
+} from "../../../auth-services/auth";
 
 function QuestionCard(props) {
   const [backgroundColor, setBackgroundColor] = useState("");
@@ -101,12 +106,12 @@ function QuestionCard(props) {
   };
   const checkIfUserVoted = (votedUsers) => {
     let userHasVoted = votedUsers.filter((user) => {
-      if (userIsLoggedIn()) {
-        if (user.owner.includes(userIsLoggedIn()._id)) {
+      if (isAuthenticated) {
+        if (user.owner.includes(userData().id)) {
           return user;
         }
       } else {
-        if (user.owner.includes(localStorage.getItem("visitorHashedIp"))) {
+        if (user.owner.includes(getVisitorHashedIp())) {
           return user;
         }
       }
