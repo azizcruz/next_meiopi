@@ -32,24 +32,11 @@ import * as api from "../../../api-services/api";
 
 export default function QuestionDetail(props) {
   const queryClient = useQueryClient();
-  useEffect(async () => {
-    let postDetailWrapper = document.querySelector(".post-detail-wrapper");
+  const [userVote, setUserVote] = useState("");
+  const [pollOptions, setPollOptions] = useState([]);
+  const toast = useToast();
 
-    if (postDetailWrapper) {
-      postDetailWrapper.scrollIntoView(true);
-    }
-
-    // Refetch post when something has changed
-    props.socket.on("questionChange", (data) => {
-      queryClient.invalidateQueries(["openedQuestion", props.id]);
-    });
-    props.socket.on("commentChange", (data) => {
-      queryClient.invalidateQueries(["openedQuestion", props.id]);
-    });
-    props.socket.on("replyChange", (data) => {
-      queryClient.invalidateQueries(["openedQuestion", props.id]);
-    });
-  }, []);
+  const { fetchFilteredPosts } = useStoreActions((actions) => actions);
 
   const {
     data: openedPost,
@@ -69,9 +56,11 @@ export default function QuestionDetail(props) {
     isError: votingPollError,
     error,
   } = useMutation(api.votePoll, {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setPollOptions(data.options);
+      checkIfUserVoted(data.votedUsers);
       toast({
-        title: "You have voted a reply",
+        title: "Thanks for voring",
         status: "success",
         duration: 2000,
         isClosable: true,
@@ -79,11 +68,31 @@ export default function QuestionDetail(props) {
     },
   });
 
-  let [userVote, setUserVote] = useState(false);
-  let toast = useToast();
+  useEffect(() => {
+    if (openedPost && openedPost.hasPoll) {
+      checkIfUserVoted(openedPost.poll.votedUsers);
+      setPollOptions(openedPost.poll.options);
+    }
+  }, [openedPost]);
 
-  const { fetchSinglePost, fetchFilteredPosts, setOpenedPost } =
-    useStoreActions((actions) => actions);
+  useEffect(() => {
+    let postDetailWrapper = document.querySelector(".post-detail-wrapper");
+
+    if (postDetailWrapper) {
+      postDetailWrapper.scrollIntoView(true);
+    }
+
+    // Refetch post when something has changed
+    props.socket.on("questionChange", (data) => {
+      queryClient.invalidateQueries(["openedQuestion", props.id]);
+    });
+    props.socket.on("commentChange", (data) => {
+      queryClient.invalidateQueries(["openedQuestion", props.id]);
+    });
+    props.socket.on("replyChange", (data) => {
+      queryClient.invalidateQueries(["openedQuestion", props.id]);
+    });
+  }, []);
 
   if (isLoading) {
     return (
@@ -195,39 +204,14 @@ export default function QuestionDetail(props) {
         postId,
       };
 
-      try {
-        votePoll(payload);
-        setUserVote(votedOption);
-        toast({
-          title: "Thanks for voting 😘",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-      } catch (error) {
-        console.log(error);
-        if (error.request && error.request.status === 403) {
-          toast({
-            title: "You have already voted before 🙂",
-            status: "success",
-            duration: 2000,
-            isClosable: true,
-          });
-        } else {
-          toast({
-            title: "Something went wrong, try again later",
-            status: "error",
-            duration: 2000,
-            isClosable: true,
-          });
-        }
-      }
+      votePoll(payload);
+      setUserVote(votedOption);
     }
   };
 
   const checkIfUserVoted = (votedUsers) => {
     let userHasVoted = votedUsers.filter((user) => {
-      if (isAuthenticated()) {
+      if (isAuthenticated) {
         if (user.owner.includes(userData().id)) {
           return user;
         }
@@ -239,9 +223,9 @@ export default function QuestionDetail(props) {
     });
 
     if (userHasVoted.length > 0) {
-      return userHasVoted[0].option;
+      setUserVote(userHasVoted[0].option);
     } else {
-      return false;
+      setUserVote("");
     }
   };
 
@@ -272,26 +256,29 @@ export default function QuestionDetail(props) {
         >
           <Text fontSize={["md", "lg"]} fontWeight={"bold"}>
             @
-            {!openedPost.user ? (
+            {openedPost && !openedPost.user ? (
               "Anonymous"
             ) : (
-              <ProfileModal>{openedPost.user.username}</ProfileModal>
+              <ProfileModal>
+                {openedPost && openedPost.user.username}
+              </ProfileModal>
             )}{" "}
           </Text>
           <Box fontSize={["xs", "xs", "md"]}>
-            <Moment fromNow>{openedPost.createdAt}</Moment>
+            <Moment fromNow>{openedPost && openedPost.createdAt}</Moment>
           </Box>
         </Box>
         <Text mt={"5"} fontSize={["md", "lg"]}>
-          <Linkify options={LinkifyOptions}>{openedPost.content}</Linkify>
+          <Linkify options={LinkifyOptions}>
+            {openedPost && openedPost.content}
+          </Linkify>
         </Text>
         <Box>
-          <Box className={"poll-wrapper"}>
-            {openedPost.hasPoll === true && (
+          <Box className={styles["poll-wrapper"]}>
+            {openedPost && openedPost.hasPoll && (
               <Poll
-                question={openedPost.poll.question}
-                answers={openedPost.poll.options}
-                noStorage={true}
+                question={openedPost.poll && openedPost.poll.question}
+                answers={pollOptions}
                 onVote={(option) =>
                   submitVotePoll(
                     openedPost.poll.options,
@@ -299,34 +286,36 @@ export default function QuestionDetail(props) {
                     openedPost._id
                   )
                 }
-                vote={checkIfUserVoted(openedPost.poll.votedUsers)}
+                noStorage={true}
+                vote={userVote}
               />
             )}
           </Box>
         </Box>
         <Box mt={"5"} fontSize={["xs", "sm", "md", "lg"]}>
-          {openedPost.tags.split("#").map((tag, key) => {
-            if (key !== 0) {
-              return (
-                <Box
-                  key={key}
-                  as={"span"}
-                  cursor={"pointer"}
-                  fontSize={["xs", "sm", "md", "lg"]}
-                  mr={"8px"}
-                  _hover={{ fontWeight: "bold" }}
-                  onClick={() => {
-                    fetchFilteredPosts(`#${tag}`);
-                  }}
-                >
-                  #{tag}
-                </Box>
-              );
-            }
-          })}
+          {openedPost &&
+            openedPost.tags.split("#").map((tag, key) => {
+              if (key !== 0) {
+                return (
+                  <Box
+                    key={key}
+                    as={"span"}
+                    cursor={"pointer"}
+                    fontSize={["xs", "sm", "md", "lg"]}
+                    mr={"8px"}
+                    _hover={{ fontWeight: "bold" }}
+                    onClick={() => {
+                      fetchFilteredPosts(`#${tag}`);
+                    }}
+                  >
+                    #{tag}
+                  </Box>
+                );
+              }
+            })}
         </Box>
 
-        {openedPost.comments.length > 10 && (
+        {openedPost && openedPost.comments.length > 10 && (
           <Box
             w={"100%"}
             display={"flex"}
@@ -359,13 +348,13 @@ export default function QuestionDetail(props) {
           </Box>
         )}
 
-        {openedPost.comments.length > 0 && (
+        {openedPost && openedPost.comments.length > 0 && (
           <Box textAlign={"right"} fontSize={["xs", "sm", "md", "lg"]} mt={6}>
             {openedPost.comments.length}{" "}
             {openedPost.comments.length > 1 ? "opinions" : "opinion"}{" "}
           </Box>
         )}
-        {openedPost.comments.length > 0 ? (
+        {openedPost && openedPost.comments.length > 0 ? (
           openedPost.comments.map((comment, key) => {
             return (
               <QuestionDetailOpinion
@@ -387,7 +376,7 @@ export default function QuestionDetail(props) {
             />
           </>
         )}
-        {openedPost.comments.length > 0 && (
+        {openedPost && openedPost.comments.length > 0 && (
           <Box w={"100%"} display={"flex"} justifyContent={"center"} mt={3}>
             <OpinionForm
               buttonWidth={"100px"}

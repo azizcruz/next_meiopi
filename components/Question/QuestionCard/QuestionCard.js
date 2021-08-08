@@ -6,8 +6,9 @@ import React, { useState, useRef, useEffect } from "react";
 import "./../../../styles/QuestionFormsStyles.module.scss";
 import EditQuestionCard from "./../../Forms/EditQuestionCard/EditQuestionCard";
 import Link from "next/link";
-import { useStoreState, useStoreActions } from "easy-peasy";
+import { useStoreActions } from "easy-peasy";
 import "animate.css";
+import { useMutation, useQueryClient } from "react-query";
 import Moment from "react-moment";
 import Linkify from "linkifyjs/react";
 import LinkifyOptions from "./../../../utils/Linkify/LinkifyOptions";
@@ -16,6 +17,7 @@ import ProfileModal from "../../ProfileModal/ProfileModal";
 import OpenedCommentsButton from "../OpenedOpinionsButton/OpenedOpinionsButton";
 import AddToFollowingsButton from "../AddToFollowingButton/AddToFollowingButton";
 import styles from "../../../styles/Home.module.scss";
+import * as api from "../../../api-services/api";
 import {
   isAuthenticated,
   userData,
@@ -24,14 +26,64 @@ import {
 
 function QuestionCard(props) {
   const [backgroundColor, setBackgroundColor] = useState("");
+  const [reRenderComponent, setRerenderComponent] = useState(0);
+  const [options, setOptions] = useState([]);
+  const [userVote, setUserVote] = useState(null);
+  const [userHasVoted, setUserHasVoted] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const toast = useToast();
 
-  const { fetchFilteredPosts, votePoll } = useStoreActions(
-    (actions) => actions
-  );
+  const { fetchFilteredPosts } = useStoreActions((actions) => actions);
 
-  const { loadingPoll } = useStoreState((state) => state);
+  const {
+    isLoading: loadingVote,
+    mutate: votePoll,
+    isError: isVotingPollError,
+    error: addingVoteError,
+  } = useMutation(api.votePoll, {
+    onMutate: (updateData) => {
+      let currOptions = props.poll.options;
+      currOptions.map((option) => {
+        if (option._id === updateData.voteOptionId) {
+          option.votes += 1;
+        }
+      });
+      setOptions(currOptions);
+      setUserVote({
+        owner: updateData.hashedIpOrUserId,
+        _id: updateData.voteOptionId,
+        option: updateData.option,
+      });
+      setUserHasVoted(true);
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Thanks for voting 😘",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    },
+    onError(error) {
+      if (error.request && error.request.status === 403) {
+        toast({
+          title: "You have already voted before 🙂",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Something went wrong, try again later",
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    },
+  });
 
   function componentToHex(c) {
     var hex = c.toString(16);
@@ -62,51 +114,26 @@ function QuestionCard(props) {
     options.map((option) => {
       if (option.option === votedOption) {
         toVote = option._id;
-        option.votes += 1;
       }
     });
 
     if (toVote) {
-      try {
-        // Detect vote performer
-        let votePerformer = userIsLoggedIn()
-          ? userIsLoggedIn()._id
-          : localStorage.getItem("visitorHashedIp");
+      let payload = {
+        hashedIpOrUserId: isAuthenticated()
+          ? userData().id
+          : getVisitorHashedIp(),
+        voteOptionId: toVote,
+        option: votedOption,
+        postId,
+      };
 
-        console.log(votePerformer);
-        let data = await votePoll({
-          hashedIpOrUserId: votePerformer,
-          voteOptionId: toVote,
-          postId: props.postId,
-        });
-        toast({
-          title: "Thanks for voting 😘",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-      } catch (error) {
-        if (error.request && error.request.status === 403) {
-          toast({
-            title: "You have already voted before 🙂",
-            status: "success",
-            duration: 2000,
-            isClosable: true,
-          });
-        } else {
-          toast({
-            title: "Something went wrong, try again later",
-            status: "error",
-            duration: 2000,
-            isClosable: true,
-          });
-        }
-      }
+      votePoll(payload);
     }
   };
+
   const checkIfUserVoted = (votedUsers) => {
     let userHasVoted = votedUsers.filter((user) => {
-      if (isAuthenticated) {
+      if (isAuthenticated()) {
         if (user.owner.includes(userData().id)) {
           return user;
         }
@@ -120,7 +147,7 @@ function QuestionCard(props) {
     if (userHasVoted.length > 0) {
       return userHasVoted[0].option;
     } else {
-      return false;
+      return "";
     }
   };
 
@@ -193,13 +220,13 @@ function QuestionCard(props) {
         <Text
           mt={"5"}
           fontSize={["lg", "x-large"]}
-          className={"question-content"}
+          className={styles["question-content"]}
         >
           <Linkify options={LinkifyOptions}>{props.content}</Linkify>
         </Text>
 
-        <Box className={"poll-wrapper"}>
-          {props.hasPoll && loadingPoll === false && (
+        <Box className={styles["poll-wrapper"]}>
+          {props.hasPoll && !userHasVoted ? (
             <Poll
               question={props.poll && props.poll.question}
               answers={props.poll && props.poll.options}
@@ -207,7 +234,17 @@ function QuestionCard(props) {
                 submitVotePoll(props.poll.options, option, props.postId)
               }
               noStorage={true}
-              vote={checkIfUserVoted(props.poll ? props.poll.votedUsers : [])}
+              vote={checkIfUserVoted(props.poll.votedUsers)}
+            />
+          ) : (
+            <Poll
+              question={props.poll && props.poll.question}
+              answers={options}
+              onVote={(option) =>
+                submitVotePoll(props.poll.options, option, props.postId)
+              }
+              noStorage={true}
+              vote={userVote}
             />
           )}
         </Box>

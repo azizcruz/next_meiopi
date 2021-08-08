@@ -151,6 +151,13 @@
   background-color: #64b5f6;
 }
 
+.poll-wrapper {
+  h3 {
+    border: none !important;
+    margin: 0 !important;
+  }
+}
+
 /* div.posts:active > div {
   opacity: 0.3;
   transition-delay: 0.5s;
