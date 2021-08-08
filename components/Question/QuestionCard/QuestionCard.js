@@ -31,8 +31,6 @@ function QuestionCard(props) {
   const [userVote, setUserVote] = useState(null);
   const [userHasVoted, setUserHasVoted] = useState(false);
 
-  const queryClient = useQueryClient();
-
   const toast = useToast();
 
   const { fetchFilteredPosts } = useStoreActions((actions) => actions);

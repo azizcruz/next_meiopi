@@ -32,8 +32,9 @@ import * as api from "../../../api-services/api";
 
 export default function QuestionDetail(props) {
   const queryClient = useQueryClient();
-  const [userVote, setUserVote] = useState("");
-  const [pollOptions, setPollOptions] = useState([]);
+  const [options, setOptions] = useState([]);
+  const [userVote, setUserVote] = useState(null);
+  const [userHasVoted, setUserHasVoted] = useState(false);
   const toast = useToast();
 
   const { fetchFilteredPosts } = useStoreActions((actions) => actions);
@@ -53,27 +54,51 @@ export default function QuestionDetail(props) {
   const {
     isLoading: loadingVote,
     mutate: votePoll,
-    isError: votingPollError,
-    error,
+    isError: isVotingPollError,
+    error: addingVoteError,
   } = useMutation(api.votePoll, {
+    onMutate: (updateData) => {
+      let currOptions = openedPost.poll.options;
+      currOptions.map((option) => {
+        if (option._id === updateData.voteOptionId) {
+          option.votes += 1;
+        }
+      });
+      setOptions(currOptions);
+      setUserVote({
+        owner: updateData.hashedIpOrUserId,
+        _id: updateData.voteOptionId,
+        option: updateData.option,
+      });
+      setUserHasVoted(true);
+    },
     onSuccess: (data) => {
-      setPollOptions(data.options);
-      checkIfUserVoted(data.votedUsers);
+      queryClient.invalidateQueries(["openedQuestion", props.id]);
       toast({
-        title: "Thanks for voring",
+        title: "Thanks for voting 😘",
         status: "success",
         duration: 2000,
         isClosable: true,
       });
     },
+    onError(error) {
+      if (error.request && error.request.status === 403) {
+        toast({
+          title: "You have already voted before 🙂",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Something went wrong, try again later",
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    },
   });
-
-  useEffect(() => {
-    if (openedPost && openedPost.hasPoll) {
-      checkIfUserVoted(openedPost.poll.votedUsers);
-      setPollOptions(openedPost.poll.options);
-    }
-  }, [openedPost]);
 
   useEffect(() => {
     let postDetailWrapper = document.querySelector(".post-detail-wrapper");
@@ -201,17 +226,17 @@ export default function QuestionDetail(props) {
           ? userData().id
           : getVisitorHashedIp(),
         voteOptionId: toVote,
-        postId,
+        option: votedOption,
+        postId: props.id,
       };
 
       votePoll(payload);
-      setUserVote(votedOption);
     }
   };
 
   const checkIfUserVoted = (votedUsers) => {
     let userHasVoted = votedUsers.filter((user) => {
-      if (isAuthenticated) {
+      if (isAuthenticated()) {
         if (user.owner.includes(userData().id)) {
           return user;
         }
@@ -223,9 +248,9 @@ export default function QuestionDetail(props) {
     });
 
     if (userHasVoted.length > 0) {
-      setUserVote(userHasVoted[0].option);
+      return userHasVoted[0].option;
     } else {
-      setUserVote("");
+      return "";
     }
   };
 
@@ -275,16 +300,22 @@ export default function QuestionDetail(props) {
         </Text>
         <Box>
           <Box className={styles["poll-wrapper"]}>
-            {openedPost && openedPost.hasPoll && (
+            {openedPost.hasPoll && !userHasVoted ? (
               <Poll
                 question={openedPost.poll && openedPost.poll.question}
-                answers={pollOptions}
+                answers={openedPost.poll && openedPost.poll.options}
                 onVote={(option) =>
-                  submitVotePoll(
-                    openedPost.poll.options,
-                    option,
-                    openedPost._id
-                  )
+                  submitVotePoll(openedPost.poll.options, option, props.id)
+                }
+                noStorage={true}
+                vote={checkIfUserVoted(openedPost.poll.votedUsers)}
+              />
+            ) : (
+              <Poll
+                question={openedPost.poll && openedPost.poll.question}
+                answers={options}
+                onVote={(option) =>
+                  submitVotePoll(openedPost.poll.options, option, props.id)
                 }
                 noStorage={true}
                 vote={userVote}
