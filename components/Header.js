@@ -48,6 +48,7 @@ import { useQuery, useQueryClient, useMutation } from "react-query";
 import * as api from "../api-services/api";
 import FollowingQuestions from "../components/Question/FollowingQuestions/FollowingQuestions";
 import AccountModal from "../components/Forms/Account/AccountModal";
+import { isAuthenticated, userData, logout } from "../auth-services/auth";
 
 export default function Header() {
   const queryClient = useQueryClient();
@@ -73,6 +74,7 @@ export default function Header() {
   } = useStoreActions((actions) => actions);
 
   const { filterPostsBy } = useStoreState((state) => state);
+  const [toRerender, setToRerender] = useState(0);
 
   if (isErrorFetchingTags) {
     toast({
@@ -96,21 +98,25 @@ export default function Header() {
           title={"Home"}
           icon={<AiFillHome color={"#ff9f1c"} display={"inline"} />}
         />
-        {true ? <AccountModal /> : ""}
+        {isAuthenticated() ? <AccountModal /> : ""}
 
         <FollowingQuestions />
 
-        {true ? (
+        {!isAuthenticated() ? (
           <Nav
             title={"Login"}
             icon={<FiLogIn color={"#ff9f1c"} display={"inline"} />}
           >
-            <LoginButton />
+            <LoginButton
+              onLogin={() => {
+                setToRerender(toRerender + 1);
+              }}
+            />
           </Nav>
         ) : (
           ""
         )}
-        {true ? (
+        {!isAuthenticated() ? (
           <Nav
             title={"Sign up"}
             icon={<FiUserPlus color={"#ff9f1c"} display={"inline"} />}
@@ -120,11 +126,14 @@ export default function Header() {
         ) : (
           ""
         )}
-        {!true ? (
+        {isAuthenticated() ? (
           <Nav
             title={"Logout"}
             icon={<FiLogOut color={"#ff9f1c"} display={"inline"} />}
-            onClick={() => {}}
+            onClick={() => {
+              logout();
+              setToRerender(toRerender + 1);
+            }}
           />
         ) : (
           ""

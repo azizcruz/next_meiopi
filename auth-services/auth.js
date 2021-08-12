@@ -19,6 +19,8 @@ export const userData = () => {
     return {
       id: cookie.load("signInUser").id,
       username: cookie.load("signInUser").username,
+      token: cookie.load("signInUser").token,
+      refresh: cookie.load("signInUser").refresh,
     };
   } else {
     return {};

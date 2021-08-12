@@ -30,6 +30,7 @@ import * as yup from "yup";
 import { useJwt } from "react-jwt";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as api from "../../../api-services/api";
+import { isAuthenticated, userData } from "../../../auth-services/auth";
 
 let schema = yup.object().shape({
   content: yup.string().required(),
@@ -256,11 +257,19 @@ export default function AddQuestionCard(props) {
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody mb={3}>
-            <Text>Post as {true ? "aziz" : "Anonymous"}</Text>
+            <Text
+              mb={3}
+              textAlign={"center"}
+              backgroundColor={"blackAlpha.300"}
+              p={2}
+              borderRadius={8}
+            >
+              You are consulting now as{" "}
+              {isAuthenticated() ? userData().username : "Anonymous"}
+            </Text>
             <form onSubmit={onSubmit} id={"newPostForm"}>
               <Text mb="8px">Describe your problem</Text>
               <Textarea
-                placeholder="Here is a sample placeholder"
                 size="sm"
                 rows={"5"}
                 resize={"none"}
@@ -268,6 +277,7 @@ export default function AddQuestionCard(props) {
                 isInvalid={false}
                 name={"content"}
                 onKeyUp={checkRemain}
+                mb={2}
               />
               <Box
                 mr={4}

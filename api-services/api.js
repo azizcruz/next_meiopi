@@ -66,6 +66,11 @@ export const logout = (payload) =>
   api.get(`/v1/users/${payload.userId}`).then((res) => res.data);
 export const fetchUser = (payload) =>
   api.get(`/v1/users/${payload.userId}`).then((res) => res.data);
+export const updateUser = (payload) => {
+  let userId = payload.userId;
+  delete payload.userId;
+  api.patch(`/v1/users/${userId}`, payload).then((res) => res.data);
+};
 
 // Tags api
 export const getTags = () => api.get(`/v1/posts/tags`).then((res) => res.data);

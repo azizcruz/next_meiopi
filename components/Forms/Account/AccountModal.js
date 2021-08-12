@@ -21,6 +21,7 @@ import {
   AlertDialogOverlay,
   Textarea,
   Box,
+  Spinner,
   Center,
 } from "@chakra-ui/react";
 import Nav from "../../BottomNavbar/Nav";
@@ -28,61 +29,91 @@ import { BsFillQuestionCircleFill } from "react-icons/bs";
 import { RiAccountCircleLine } from "react-icons/ri";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as api from "../../../api-services/api";
+import { isAuthenticated, userData } from "../../../auth-services/auth";
+import { useForm, Controller } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
 
 export default function AccountModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isOpenDialog, setIsOpenDialog] = React.useState(false);
-  const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [remain, setRemain] = useState(200);
   const cancelRef = React.useRef();
 
-  //   const {
-  //     data: fetchedUser,
-  //     isLoading,
-  //     isError,
-  //     isSuccess,
-  //     isFetching,
-  //   } = useQuery(
-  //     "Account",
-  //     () => api.fetchUser({ userId: loggedInUser().userId }),
-  //     {
-  //       refetchOnWindowFocus: false,
-  //       enabled: isOpen,
-  //     }
-  //   );
-  const toast = useToast();
+  let canSubmit = username;
 
-  const onInputChange = (e) => {
-    setUsername(e.target.value);
-  };
+  const {
+    data: fetchedUser,
+    isLoading,
+    isError,
+    isSuccess,
+    isFetching,
+  } = useQuery("Account", () => api.fetchUser({ userId: userData().id }), {
+    refetchOnWindowFocus: false,
+    enabled: isOpen,
+  });
+
+  const {
+    isLoading: updateUserLoading,
+    mutate: updateUser,
+    isError: isUpdateUserError,
+  } = useMutation(api.updateUser, {
+    onSuccess: () => {
+      toast({
+        title: "You have updated your data",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    },
+    onError: (e) => {
+      console.log(e.request);
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    username: fetchedUser ? fetchedUser.username : "",
+    bio: fetchedUser ? fetchedUser.bio : "",
+  });
+
+  let username = watch("username");
+
+  const toast = useToast();
 
   const checkRemain = (e) => {
     let countedLetters = e.target.value.length;
     let remainedLetters = 200 - countedLetters;
     setRemain(remainedLetters);
-    setBio(e.target.value);
   };
 
   const onCloseDialog = () => setIsOpenDialog(false);
 
-  //   if (isError) {
-  //     toast({
-  //       title: "Failed to get user, try again later",
-  //       status: "error",
-  //       duration: 2000,
-  //       isClosable: true,
-  //     });
-  //   }
+  const updateUserData = (data) => {
+    data.userId = userData().id;
+    updateUser(data);
+  };
+
+  if (isError) {
+    toast({
+      title: "Failed to get user, try again later",
+      status: "error",
+      duration: 2000,
+      isClosable: true,
+    });
+  }
+
   return (
     <>
       <Nav
         title={"Account"}
         icon={<RiAccountCircleLine color={"#ff9f1c"} display={"inline"} />}
         onClick={() => {
-          //   onOpen();
-          //   setUsername(fetchedUser?.username);
-          //   setBio(fetchedUser?.bio);
+          onOpen();
         }}
       ></Nav>
       <Modal
@@ -109,7 +140,7 @@ export default function AccountModal() {
                 padding={2}
                 fontWeight={"bold"}
               >
-                {/* Agree rate {Math.ceil(fetchedUser?.agreeRate)}% */}
+                Agree rate {Math.ceil(fetchedUser?.agreeRate)}%
               </Text>
               <Box
                 as={"span"}
@@ -135,12 +166,45 @@ export default function AccountModal() {
                 </Box>
               </Box>
             </Box>
-            <form>
-              <Text mb={1}>username</Text>
-              <Input onChange={onInputChange} value={username} mb={3} />
+            <form onSubmit={handleSubmit(updateUserData)}>
+              <Text>username</Text>
+              <Input
+                {...register("username", {
+                  required: "Username is required",
+                  maxLength: {
+                    value: 8,
+                    message: "Username must be 8 or less characters",
+                  },
+                })}
+                defaultValue={fetchedUser?.username}
+              />
+              {errors.username && (
+                <ErrorMessage
+                  errors={errors}
+                  name="username"
+                  m={1}
+                  render={({ message }) => (
+                    <Box p={1} bg={"red.400"} mr={0} mb={3}>
+                      {message}
+                    </Box>
+                  )}
+                />
+              )}
+
               <Text mb={1}>bio</Text>
               <Box position={"relative"}>
-                <Textarea resize={"none"} onChange={checkRemain} />
+                <Textarea
+                  {...register("bio", {
+                    maxLength: {
+                      value: 200,
+                      message: "Biography must be 200 charachters or less",
+                    },
+                  })}
+                  onChange={checkRemain}
+                  resize={"none"}
+                  defaultValue={fetchedUser?.bio}
+                />
+
                 <Box
                   mr={4}
                   color={remain < 0 ? "red.400" : ""}
@@ -152,13 +216,33 @@ export default function AccountModal() {
                 </Box>
               </Box>
 
+              {errors.bio && (
+                <ErrorMessage
+                  errors={errors}
+                  name="bio"
+                  m={1}
+                  render={({ message }) => (
+                    <Box p={1} bg={"red.400"} mb={3}>
+                      {message}
+                    </Box>
+                  )}
+                />
+              )}
               <Button
                 bgColor={"#ff9f1c"}
                 color={"black"}
                 colorScheme={"#ff9f1c"}
+                mt={2}
+                type={"submit"}
               >
                 Update data
               </Button>
+
+              {updateUserLoading && (
+                <Box as={"span"} position={"relative"} left={3} top={3}>
+                  <Spinner />
+                </Box>
+              )}
               <Text mt={3} mb={3}>
                 Password
               </Text>

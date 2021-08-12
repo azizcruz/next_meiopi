@@ -135,7 +135,7 @@ function ProfileModal(props) {
               p={3}
               borderRadius={5}
             >
-              I like going to places where good things happen
+              {fetchedUser && fetchedUser.bio}
             </Box>
             <Box
               textAlign={"left"}

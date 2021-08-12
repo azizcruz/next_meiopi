@@ -15,7 +15,7 @@ import { FiLogIn } from "react-icons/fi";
 import LoginForm from "./LoginForm";
 import Nav from "../../BottomNavbar/Nav";
 
-export default function CreateAccountButton() {
+export default function CreateAccountButton(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -32,7 +32,12 @@ export default function CreateAccountButton() {
             <ModalHeader>Login</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <LoginForm onSignIn={() => onClose()} />
+              <LoginForm
+                onSignIn={() => {
+                  props.onLogin();
+                  onClose();
+                }}
+              />
             </ModalBody>
             <ModalFooter></ModalFooter>
           </ModalContent>
