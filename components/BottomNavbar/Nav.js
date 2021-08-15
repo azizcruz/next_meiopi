@@ -10,14 +10,13 @@ export default function Nav(props) {
           <>
             <Box
               as={"i"}
-              fontSize={["sm", "md", "lg"]}
               color={props.titleColor ? props.titleColor : "#ff9f1c"}
             >
               {props.icon}
             </Box>
             <Box
               as={"span"}
-              fontSize={["sm", "md", "lg"]}
+              fontSize={["md", "lg"]}
               color={props.titleColor ? props.titleColor : "#ff9f1c"}
             >
               {props.title}

@@ -10,7 +10,9 @@ import {
   Button,
   useDisclosure,
   Center,
+  Text,
   Box,
+  Flex,
 } from "@chakra-ui/react";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import RegisterForm from "./RegisterForm";
@@ -21,11 +23,20 @@ export default function CreateAccountButton() {
 
   return (
     <>
-      <Nav
-        title={"Sign up"}
-        icon={<AiOutlineUserAdd color={"#ff9f1c"} display={"inline"} />}
+      <Flex
         onClick={onOpen}
-      ></Nav>
+        justifyContent={"center"}
+        alignItems={"center"}
+        fontSize={["md", "xl"]}
+        backgroundColor={"blackAlpha.300"}
+        cursor={"pointer"}
+        p={2}
+      >
+        <Text mr={2}>Sign up</Text>
+        <Box>
+          <AiOutlineUserAdd fontSize={["28px"]} display={"inline"} />
+        </Box>
+      </Flex>
 
       <Modal onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />

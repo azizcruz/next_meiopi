@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Box,
   Button,
@@ -40,8 +40,7 @@ import { useStoreState, useStoreActions } from "easy-peasy";
 import CreateAccountButton from "./Forms/RegisterForm/CreateAccountButton";
 import LoginButton from "./Forms/LoginForm/LoginButton";
 import IdleTimer from "react-idle-timer";
-import { useJwt } from "react-jwt";
-import { useHistory } from "react-router-dom";
+
 import NavbarContainer from "../components/BottomNavbar/NavbarContainer";
 import Nav from "../components/BottomNavbar/Nav";
 import { useQuery, useQueryClient, useMutation } from "react-query";
@@ -49,9 +48,11 @@ import * as api from "../api-services/api";
 import FollowingQuestions from "../components/Question/FollowingQuestions/FollowingQuestions";
 import AccountModal from "../components/Forms/Account/AccountModal";
 import { isAuthenticated, userData, logout } from "../auth-services/auth";
+import AccountDrawer from "./Forms/Account/AccountDrawer.js";
 
 export default function Header() {
   const queryClient = useQueryClient();
+  const { setUserLogin } = useStoreActions((actions) => actions);
   const {
     data: listOfTags,
     isLoading,
@@ -73,8 +74,7 @@ export default function Header() {
     getFollowingQuestions,
   } = useStoreActions((actions) => actions);
 
-  const { filterPostsBy } = useStoreState((state) => state);
-  const [toRerender, setToRerender] = useState(0);
+  const { filterPostsBy, isLoggedIn } = useStoreState((state) => state);
 
   if (isErrorFetchingTags) {
     toast({
@@ -96,48 +96,12 @@ export default function Header() {
       <NavbarContainer>
         <Nav
           title={"Home"}
-          icon={<AiFillHome color={"#ff9f1c"} display={"inline"} />}
+          icon={<AiFillHome color={"#ff9f1c"} size={[30]} display={"inline"} />}
         />
-        {isAuthenticated() ? <AccountModal /> : ""}
+
+        <AccountDrawer />
 
         <FollowingQuestions />
-
-        {!isAuthenticated() ? (
-          <Nav
-            title={"Login"}
-            icon={<FiLogIn color={"#ff9f1c"} display={"inline"} />}
-          >
-            <LoginButton
-              onLogin={() => {
-                setToRerender(toRerender + 1);
-              }}
-            />
-          </Nav>
-        ) : (
-          ""
-        )}
-        {!isAuthenticated() ? (
-          <Nav
-            title={"Sign up"}
-            icon={<FiUserPlus color={"#ff9f1c"} display={"inline"} />}
-          >
-            <CreateAccountButton />
-          </Nav>
-        ) : (
-          ""
-        )}
-        {isAuthenticated() ? (
-          <Nav
-            title={"Logout"}
-            icon={<FiLogOut color={"#ff9f1c"} display={"inline"} />}
-            onClick={() => {
-              logout();
-              setToRerender(toRerender + 1);
-            }}
-          />
-        ) : (
-          ""
-        )}
       </NavbarContainer>
       <Flex alignItems={"center"}>
         <Box fontSize={"2xl"} alignSelf={"flex-end"}>

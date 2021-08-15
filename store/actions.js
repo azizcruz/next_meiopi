@@ -27,4 +27,10 @@ export default {
     state.followingQuestions = currentList;
     localStorage.setItem("followingQuestions", JSON.stringify(currentList));
   }),
+
+  // ======
+
+  setUserLogin: action((state, payload) => {
+    state.isLoggedIn = payload;
+  }),
 };

@@ -10,6 +10,8 @@ import {
   Button,
   useDisclosure,
   Box,
+  Flex,
+  Text,
 } from "@chakra-ui/react";
 import { FiLogIn } from "react-icons/fi";
 import LoginForm from "./LoginForm";
@@ -20,11 +22,20 @@ export default function CreateAccountButton(props) {
 
   return (
     <>
-      <Nav
-        title={"Login"}
-        icon={<FiLogIn color={"#ff9f1c"} display={"inline"} />}
+      <Flex
         onClick={onOpen}
-      ></Nav>
+        justifyContent={"center"}
+        alignItems={"center"}
+        fontSize={["md", "xl"]}
+        backgroundColor={"blackAlpha.300"}
+        p={2}
+        cursor={"pointer"}
+      >
+        <Text mr={2}>Log in</Text>
+        <Box>
+          <FiLogIn fontSize={["28px"]} display={"inline"} />
+        </Box>
+      </Flex>
       <Box>
         <Modal onClose={onClose} isOpen={isOpen} isCentered>
           <ModalOverlay />

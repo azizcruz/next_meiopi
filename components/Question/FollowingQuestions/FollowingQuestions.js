@@ -21,7 +21,7 @@ export default function FollowingQuestions() {
     <>
       <Nav
         title={"Following"}
-        icon={<BiAddToQueue color={"#ff9f1c"} display={"inline"} />}
+        icon={<BiAddToQueue size={[30]} color={"#ff9f1c"} display={"inline"} />}
         onClick={onOpen}
       ></Nav>
       <Drawer placement={"bottom"} onClose={onClose} isOpen={isOpen}>

@@ -13,6 +13,7 @@ import store from "./../store/store";
 import theme from "./../styles/theme";
 import * as api from "../api-services/api";
 import cookies from "react-cookies";
+import Axios from "axios";
 
 const queryClient = new QueryClient();
 

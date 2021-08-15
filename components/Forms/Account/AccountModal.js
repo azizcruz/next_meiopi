@@ -23,6 +23,7 @@ import {
   Box,
   Spinner,
   Center,
+  Flex,
 } from "@chakra-ui/react";
 import Nav from "../../BottomNavbar/Nav";
 import { BsFillQuestionCircleFill } from "react-icons/bs";
@@ -109,13 +110,20 @@ export default function AccountModal() {
 
   return (
     <>
-      <Nav
-        title={"Account"}
-        icon={<RiAccountCircleLine color={"#ff9f1c"} display={"inline"} />}
-        onClick={() => {
-          onOpen();
-        }}
-      ></Nav>
+      <Flex
+        onClick={onOpen}
+        justifyContent={"center"}
+        alignItems={"center"}
+        fontSize={["md", "xl"]}
+        backgroundColor={"blackAlpha.300"}
+        p={2}
+        cursor={"pointer"}
+      >
+        <Text mr={2}>Profile</Text>
+        <Box>
+          <RiAccountCircleLine fontSize={["28px"]} display={"inline"} />
+        </Box>
+      </Flex>
       <Modal
         isOpen={isOpen}
         onClose={onClose}
