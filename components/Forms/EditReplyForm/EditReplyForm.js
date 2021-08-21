@@ -24,12 +24,7 @@ export default function EditReplyForm(props) {
 
   const toast = useToast();
 
-  useEffect(async () => {
-    // Refetch replys when reply is edited
-    props.socket.on("commentChange", (data) => {
-      queryClient.invalidateQueries(["openedComments", props.postId]);
-    });
-  }, []);
+  useEffect(async () => {}, []);
 
   const {
     isLoading,

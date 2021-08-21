@@ -27,7 +27,7 @@ export default function OpenedOpinionsModal(props) {
   }, []);
 
   const { data, isLoading, isError, isSuccess, isFetching } = useQuery(
-    ["openedComments", props.postId],
+    ["openedOpinions", props.postId],
     () => api.fetchOpinions({ postId: props.postId }),
     {
       enabled: props.isOpen,

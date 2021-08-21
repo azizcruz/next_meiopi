@@ -24,12 +24,7 @@ export default function EditOpinionForm(props) {
 
   const toast = useToast();
 
-  useEffect(async () => {
-    // Refetch comments when comment is edited
-    props.socket.on("commentChange", (data) => {
-      queryClient.invalidateQueries(["openedComments", props.postId]);
-    });
-  }, []);
+  useEffect(async () => {}, []);
 
   const {
     isLoading,

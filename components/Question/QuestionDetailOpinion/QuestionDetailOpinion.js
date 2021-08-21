@@ -161,9 +161,13 @@ export default function PostDetailOpinion(props) {
               props.upVoteUsers.includes(
                 queryClient.getQueryData("hashedIp")
               ) ? (
-                <FaHandshake mb={"1"} fontSize={"x-large"} />
+                <Box borderRadius={"50%"} bg={"blackAlpha.300"} p={["2", "4"]}>
+                  <FaHandshake mb={"1"} fontSize={"x-large"} />
+                </Box>
               ) : (
-                <FaRegHandshake fontSize={"x-large"} />
+                <Box borderRadius={"50%"} bg={"blackAlpha.300"} p={["2", "4"]}>
+                  <FaRegHandshake fontSize={"x-large"} />
+                </Box>
               )}
             </Box>
           </Box>

@@ -22,6 +22,12 @@ import ProfileModal from "../../ProfileModal/ProfileModal";
 import EditOpinionForm from "../../Forms/EditOpinionForm/EditOpinionForm";
 import { useQuery, useQueryClient, useMutation } from "react-query";
 import * as api from "../../../api-services/api";
+import {
+  isAuthenticated,
+  userData,
+  getVisitorHashedIp,
+} from "../../../auth-services/auth";
+import { FaHandshake } from "react-icons/fa";
 
 export default function Opinion(props) {
   const queryClient = useQueryClient();
@@ -85,13 +91,12 @@ export default function Opinion(props) {
   }
 
   const agreeWith = async () => {
-    const hashedIp = queryClient.getQueryData("hashedIp");
     try {
-      if (hashedIp || isAuthenticated()) {
-        // submitAgreeWith({
-        //   commentId: props.commentId,
-        //   userIpOrId: isAuthenticated() ? user().userId : hashedIp,
-        // });
+      if (getVisitorHashedIp || isAuthenticated()) {
+        submitAgreeWith({
+          commentId: props.commentId,
+          userIpOrId: isAuthenticated() ? userData().id : getVisitorHashedIp(),
+        });
       }
     } catch (error) {
       toast({
@@ -128,14 +133,16 @@ export default function Opinion(props) {
           </Box>
         </Box>
         <Box display={"flex"} alignItems={"center"} ml={"auto"}>
-          {/* {props.user && user() && props.user._id === user().userId && (
-            <EditOpinionForm
-              currentContent={props.commentContent}
-              commentId={props.commentId}
-              postId={props.postId}
-              socket={props.socket}
-            />
-          )} */}
+          {props.user &&
+            isAuthenticated() &&
+            props.user._id === userData().id && (
+              <EditOpinionForm
+                currentContent={props.commentContent}
+                commentId={props.commentId}
+                postId={props.postId}
+                socket={props.socket}
+              />
+            )}
 
           <Box
             display={"flex"}
@@ -146,12 +153,16 @@ export default function Opinion(props) {
             <Box as={"span"} mr={"1"} mt={"1"} fontWeight={"bold"}>
               {props.votes}
             </Box>
-            {/* {(isAuthenticated() && props.upVoteUsers.includes(user().userId)) ||
-            props.upVoteUsers.includes(queryClient.getQueryData("hashedIp")) ? (
-              <FaHandshake mb={"1"} color={"red"} fontSize={"x-large"} />
+            {(isAuthenticated() && props.upVoteUsers.includes(userData().id)) ||
+            props.upVoteUsers.includes(getVisitorHashedIp()) ? (
+              <Box borderRadius={"50%"} bg={"blackAlpha.300"} p={["2", "4"]}>
+                <FaHandshake mb={"1"} color={"green"} fontSize={"x-large"} />
+              </Box>
             ) : (
-              <FaRegHandshake fontSize={"x-large"} />
-            )} */}
+              <Box borderRadius={"50%"} bg={"blackAlpha.300"} p={["2", "4"]}>
+                <FaHandshake fontSize={"x-large"} />
+              </Box>
+            )}
           </Box>
         </Box>
       </Flex>

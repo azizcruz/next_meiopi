@@ -10,6 +10,7 @@ import {
   Flex,
   Stack,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { useStoreState, useStoreActions } from "easy-peasy";
 import AccountModal from "./AccountModal";
@@ -18,9 +19,11 @@ import CreateAccountButton from "../RegisterForm/CreateAccountButton";
 import { RiAccountCircleLine } from "react-icons/ri";
 import Nav from "../../BottomNavbar/Nav";
 import { FiLogOut } from "react-icons/fi";
+import { logout } from "../../../auth-services/auth";
 
 export default function AccountDrawer() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const { isLoggedIn } = useStoreState((state) => state);
   const { setUserLogin } = useStoreActions((actions) => actions);
 
@@ -71,8 +74,15 @@ export default function AccountDrawer() {
                     p={2}
                     cursor={"pointer"}
                     onClick={() => {
+                      logout();
                       setUserLogin(false);
                       onClose();
+                      toast({
+                        title: `You logged out successfully`,
+                        status: "success",
+                        duration: 2000,
+                        isClosable: true,
+                      });
                     }}
                   >
                     <Text mr={2}>Log out</Text>
