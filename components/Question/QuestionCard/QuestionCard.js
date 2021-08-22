@@ -83,6 +83,38 @@ function QuestionCard(props) {
     },
   });
 
+  const showPoll = (hasPoll) => {
+    if (!hasPoll) {
+      return "";
+    } else {
+      if (!userHasVoted) {
+        return (
+          <Poll
+            question={props.poll && props.poll.question}
+            answers={props.poll && props.poll.options}
+            onVote={(option) =>
+              submitVotePoll(props.poll.options, option, props.postId)
+            }
+            noStorage={true}
+            vote={checkIfUserVoted(props.poll.votedUsers)}
+          />
+        );
+      } else {
+        return (
+          <Poll
+            question={props.poll && props.poll.question}
+            answers={options}
+            onVote={(option) =>
+              submitVotePoll(props.poll.options, option, props.postId)
+            }
+            noStorage={true}
+            vote={userVote}
+          />
+        );
+      }
+    }
+  };
+
   function componentToHex(c) {
     var hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
@@ -223,29 +255,7 @@ function QuestionCard(props) {
           <Linkify options={LinkifyOptions}>{props.content}</Linkify>
         </Text>
 
-        <Box className={styles["poll-wrapper"]}>
-          {props.hasPoll && !userHasVoted ? (
-            <Poll
-              question={props.poll && props.poll.question}
-              answers={props.poll && props.poll.options}
-              onVote={(option) =>
-                submitVotePoll(props.poll.options, option, props.postId)
-              }
-              noStorage={true}
-              vote={checkIfUserVoted(props.poll.votedUsers)}
-            />
-          ) : (
-            <Poll
-              question={props.poll && props.poll.question}
-              answers={options}
-              onVote={(option) =>
-                submitVotePoll(props.poll.options, option, props.postId)
-              }
-              noStorage={true}
-              vote={userVote}
-            />
-          )}
-        </Box>
+        <Box className={styles["poll-wrapper"]}>{showPoll(props.hasPoll)}</Box>
 
         <Flex justifyContent={"space-between"} alignItems={"flex-end"}>
           <Box>

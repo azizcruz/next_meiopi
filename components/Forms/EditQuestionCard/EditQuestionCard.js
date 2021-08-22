@@ -215,6 +215,7 @@ export default function EditQuestionCard(props) {
           <Box>
             Option #{i + 1}
             <Input
+              key={i}
               placeholder={`option #${i + 1}`}
               mb={"2"}
               className={`poll-option`}

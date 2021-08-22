@@ -14,7 +14,11 @@ import { FaRegHandshake, FaHandshake } from "react-icons/fa";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 import QuestionDetailReply from "../QuestionDetailReply/QuestionDetailReply";
 import ReplyForm from "../../Forms/ReplyForm/ReplyForm";
-import { isAuthenticated, userData } from "../../../auth-services/auth";
+import {
+  isAuthenticated,
+  userData,
+  getVisitorHashedIp,
+} from "../../../auth-services/auth";
 import { useStoreState, useStoreActions } from "easy-peasy";
 
 import "animate.css";
@@ -88,7 +92,7 @@ export default function PostDetailOpinion(props) {
   }
 
   const agreeWith = async () => {
-    const hashedIp = queryClient.getQueryData("hashedIp");
+    const hashedIp = getVisitorHashedIp();
 
     try {
       if (hashedIp || isAuthenticated()) {
@@ -158,9 +162,7 @@ export default function PostDetailOpinion(props) {
 
               {(isAuthenticated() &&
                 props.upVoteUsers.includes(userData().id)) ||
-              props.upVoteUsers.includes(
-                queryClient.getQueryData("hashedIp")
-              ) ? (
+              props.upVoteUsers.includes(getVisitorHashedIp()) ? (
                 <Box borderRadius={"50%"} bg={"blackAlpha.300"} p={["2", "4"]}>
                   <FaHandshake mb={"1"} fontSize={"x-large"} />
                 </Box>

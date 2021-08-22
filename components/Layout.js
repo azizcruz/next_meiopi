@@ -14,6 +14,7 @@ import theme from "./../styles/theme";
 import * as api from "../api-services/api";
 import cookies from "react-cookies";
 import Axios from "axios";
+import SearchButton from "./SearchButton/SearchButton";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ export default function Layout({ children }) {
     <>
       <StoreProvider store={store}>
         <ChakraProvider theme={theme}>
+          <SearchButton />
           <Header />
           <Container maxW="container.xl">{children}</Container>
         </ChakraProvider>

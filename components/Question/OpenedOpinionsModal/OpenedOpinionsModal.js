@@ -22,7 +22,7 @@ export default function OpenedOpinionsModal(props) {
   useEffect(async () => {
     // Refetch comments when new comment is added
     props.socket.on("commentChange", (data) => {
-      queryClient.invalidateQueries(["openedComments", props.postId]);
+      queryClient.invalidateQueries(["openedOpinions", props.postId]);
     });
   }, []);
 
