@@ -15,8 +15,18 @@ export const editQuestion = (payload) => {
     .then((res) => res.data);
 };
 
-export const getQuestions = () =>
-  api.get("/v1/posts?limit=20").then((res) => res.data);
+export const getQuestions = (payload) =>
+  api
+    .get(
+      `/v1/posts?limit=${payload.limit || 20}&filterByContent=${
+        payload.filterByContent || false
+      }&filterByTags=${payload.filterByTags || false}&filterByPostKey=${
+        payload.filterByPostKey || false
+      }&writerCountryKey=${payload.writerCountryKey || false}&page=${
+        payload.page || 0
+      }`
+    )
+    .then((res) => res.data);
 
 export const getSingleQuestion = (payload) =>
   api

@@ -24,7 +24,7 @@ function QuestionsList(props) {
 
   const { data, isLoading, isError, isSuccess, isFetching } = useQuery(
     "questions",
-    api.getQuestions,
+    () => api.getQuestions({ page: 2, limit: 30 }),
     {
       refetchOnWindowFocus: false,
     }
