@@ -33,4 +33,16 @@ export default {
   setUserLogin: action((state, payload) => {
     state.isLoggedIn = payload;
   }),
+
+  // ======
+
+  setUserHashedIp: action((state, payload) => {
+    state.userHashedIp = payload;
+  }),
+
+  // ======
+
+  setLoggedInUserData: action((state, payload) => {
+    state.userData = payload;
+  }),
 };

@@ -14,13 +14,13 @@ export default function Nav(props) {
             >
               {props.icon}
             </Box>
-            <Box
+            {/* <Box
               as={"span"}
               fontSize={["md", "lg"]}
               color={props.titleColor ? props.titleColor : "#ff9f1c"}
             >
               {props.title}
-            </Box>
+            </Box> */}
           </>
         ) : (
           props.children

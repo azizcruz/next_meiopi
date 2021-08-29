@@ -15,7 +15,7 @@ import { useStoreState } from "easy-peasy";
 
 export default function FollowingQuestions() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { followingQuestions } = useStoreState((state) => state);
+  const followingQuestions = useStoreState((state) => state.followingQuestions);
 
   return (
     <>

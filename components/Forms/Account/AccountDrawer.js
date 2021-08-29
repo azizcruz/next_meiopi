@@ -24,8 +24,11 @@ import { logout } from "../../../auth-services/auth";
 export default function AccountDrawer() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  const { isLoggedIn } = useStoreState((state) => state);
-  const { setUserLogin } = useStoreActions((actions) => actions);
+  const isLoggedIn = useStoreState((state) => state.isLoggedIn);
+  const setLoggedInUserData = useStoreActions(
+    (actions) => actions.setLoggedInUserData
+  );
+  const setUserLogin = useStoreActions((actions) => actions.setUserLogin);
 
   return (
     <>
@@ -71,11 +74,13 @@ export default function AccountDrawer() {
                     alignItems={"center"}
                     fontSize={["md", "xl"]}
                     backgroundColor={"blackAlpha.300"}
+                    borderRadius={"lg"}
                     p={2}
                     cursor={"pointer"}
                     onClick={() => {
                       logout();
                       setUserLogin(false);
+                      setLoggedInUserData({});
                       onClose();
                       toast({
                         title: `You logged out successfully`,

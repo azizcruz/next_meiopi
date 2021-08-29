@@ -7,18 +7,17 @@ import {
   useQuery,
   useMutation,
 } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { StoreProvider } from "easy-peasy";
-import store from "./../store/store";
 import theme from "./../styles/theme";
 import * as api from "../api-services/api";
 import cookies from "react-cookies";
 import Axios from "axios";
 import SearchButton from "./SearchButton/SearchButton";
+import { useStoreActions } from "easy-peasy";
 
 const queryClient = new QueryClient();
 
 export default function Layout({ children }) {
+  const setUserHashedIp = useStoreActions((action) => action.setUserHashedIp);
   const { data: ipData, isError: getIpDataError } = useQuery(
     "ipData",
     () => {
@@ -44,6 +43,7 @@ export default function Layout({ children }) {
     enabled: !!ipData,
     onSuccess: (data) => {
       queryClient.setQueryData("hashedIp", data.hashedIp);
+      setUserHashedIp(data.hashedIp);
       cookies.save("visitorHashedIp", data.hashedIp);
     },
   });
@@ -56,13 +56,11 @@ export default function Layout({ children }) {
 
   return (
     <>
-      <StoreProvider store={store}>
-        <ChakraProvider theme={theme}>
-          <SearchButton />
-          <Header />
-          <Container maxW="container.xl">{children}</Container>
-        </ChakraProvider>
-      </StoreProvider>
+      <ChakraProvider theme={theme}>
+        <SearchButton />
+        <Header />
+        <Container maxW="container.xl">{children}</Container>
+      </ChakraProvider>
     </>
   );
 }

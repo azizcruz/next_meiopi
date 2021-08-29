@@ -94,3 +94,10 @@ export const votePoll = (payload) => {
     .put(`/v1/posts/${postId}/poll/vote`, payload)
     .then((res) => res.data);
 };
+
+// Notifications api
+export const getNotifications = (payload) => {
+  return api
+    .get(`/v1/users/notifications/${payload.userId}`, payload)
+    .then((res) => res.data);
+};

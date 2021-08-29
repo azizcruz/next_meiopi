@@ -24,9 +24,11 @@ import {
   getVisitorHashedIp,
 } from "../../../auth-services/auth";
 
+import { useStoreState } from "easy-peasy";
+
 function QuestionCard(props) {
+  const userHashedIp = useStoreState((state) => state.userHashedIp);
   const [backgroundColor, setBackgroundColor] = useState("");
-  const [reRenderComponent, setRerenderComponent] = useState(0);
   const [options, setOptions] = useState([]);
   const [userVote, setUserVote] = useState(null);
   const [userHasVoted, setUserHasVoted] = useState(false);
@@ -149,9 +151,7 @@ function QuestionCard(props) {
 
     if (toVote) {
       let payload = {
-        hashedIpOrUserId: isAuthenticated()
-          ? userData().id
-          : getVisitorHashedIp(),
+        hashedIpOrUserId: isAuthenticated() ? userData().id : userHashedIp,
         voteOptionId: toVote,
         option: votedOption,
         postId,
@@ -290,4 +290,4 @@ function QuestionCard(props) {
   );
 }
 
-export default QuestionCard;
+export default React.memo(QuestionCard);

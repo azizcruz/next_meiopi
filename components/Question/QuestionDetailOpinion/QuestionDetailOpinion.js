@@ -34,7 +34,7 @@ export default function PostDetailOpinion(props) {
   const { isOpen, onToggle } = useDisclosure();
   const queryClient = useQueryClient();
   const toast = useToast();
-  const { upVoteComment } = useStoreActions((actions) => actions);
+  const userHashedIp = useStoreState((state) => state.userHashedIp);
 
   const {
     isLoading,
@@ -92,10 +92,8 @@ export default function PostDetailOpinion(props) {
   }
 
   const agreeWith = async () => {
-    const hashedIp = getVisitorHashedIp();
-
     try {
-      if (hashedIp || isAuthenticated()) {
+      if (userHashedIp || isAuthenticated()) {
         submitAgreeWith({
           commentId: props._id,
           userIpOrId: isAuthenticated() ? userData().id : hashedIp,
@@ -162,7 +160,7 @@ export default function PostDetailOpinion(props) {
 
               {(isAuthenticated() &&
                 props.upVoteUsers.includes(userData().id)) ||
-              props.upVoteUsers.includes(getVisitorHashedIp()) ? (
+              props.upVoteUsers.includes(userHashedIp) ? (
                 <Box borderRadius={"50%"} bg={"blackAlpha.300"} p={["2", "4"]}>
                   <FaHandshake mb={"1"} fontSize={"x-large"} />
                 </Box>

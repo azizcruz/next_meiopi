@@ -116,6 +116,7 @@ export default function AccountModal() {
         alignItems={"center"}
         fontSize={["md", "xl"]}
         backgroundColor={"blackAlpha.300"}
+        borderRadius={"lg"}
         p={2}
         cursor={"pointer"}
       >

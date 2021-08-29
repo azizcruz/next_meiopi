@@ -11,6 +11,7 @@ import QuestionsListLoading from "../../LoadingSekeletons/QuestionsListLoading";
 
 function QuestionsList(props) {
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   useEffect(async () => {
     // Refetch posts when new post is added
@@ -24,7 +25,7 @@ function QuestionsList(props) {
 
   const { data, isLoading, isError, isSuccess, isFetching } = useQuery(
     "questions",
-    () => api.getQuestions({ page: 2, limit: 30 }),
+    () => api.getQuestions({ page: 1, limit: 30 }),
     {
       refetchOnWindowFocus: false,
     }
@@ -46,13 +47,10 @@ function QuestionsList(props) {
   return (
     <>
       <Box className={styles.opinions}>
-        {/* <TransitionGroup component={testTrans}> */}
         {data &&
           data.docs.map((post, key) => {
             return (
-              // <CSSTransition key={post._id} timeout={1000} classNames="item">
               <QuestionCard
-                // followingQuestions={followingQuestions}
                 key={post._id}
                 content={post.content}
                 slug={post.slug}
@@ -66,10 +64,8 @@ function QuestionsList(props) {
                 user={post.user}
                 socket={props.socket}
               />
-              // </CSSTransition>
             );
           })}
-        {/* </TransitionGroup> */}
       </Box>
     </>
   );

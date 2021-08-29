@@ -30,6 +30,7 @@ import {
 import { FaHandshake } from "react-icons/fa";
 
 export default function Opinion(props) {
+  const userHashedIp = useStoreState((state) => state.userHashedIp);
   const queryClient = useQueryClient();
   const { isOpen, onToggle } = useDisclosure();
   const { upVoteComment } = useStoreActions((actions) => actions);
@@ -95,7 +96,7 @@ export default function Opinion(props) {
       if (getVisitorHashedIp || isAuthenticated()) {
         submitAgreeWith({
           commentId: props.commentId,
-          userIpOrId: isAuthenticated() ? userData().id : getVisitorHashedIp(),
+          userIpOrId: isAuthenticated() ? userData().id : userHashedIp,
         });
       }
     } catch (error) {
@@ -154,7 +155,7 @@ export default function Opinion(props) {
               {props.votes}
             </Box>
             {(isAuthenticated() && props.upVoteUsers.includes(userData().id)) ||
-            props.upVoteUsers.includes(getVisitorHashedIp()) ? (
+            props.upVoteUsers.includes(userHashedIp) ? (
               <Box borderRadius={"50%"} bg={"blackAlpha.300"} p={["2", "4"]}>
                 <FaHandshake mb={"1"} color={"green"} fontSize={"x-large"} />
               </Box>

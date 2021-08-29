@@ -28,6 +28,9 @@ const schema = yup.object().shape({
 
 export default function LoginForm(props) {
   const queryClient = useQueryClient();
+  const setLoggedInUserData = useStoreActions(
+    (actions) => actions.setLoggedInUserData
+  );
   const {
     register,
     handleSubmit,
@@ -49,6 +52,13 @@ export default function LoginForm(props) {
       reset({});
 
       cookie.save("signInUser", {
+        id: data.user.id,
+        username: data.user.username,
+        token: `Bearer ${data.tokens.access.token}`,
+        refresh: data.tokens.refresh.token,
+      });
+
+      setLoggedInUserData({
         id: data.user.id,
         username: data.user.username,
         token: `Bearer ${data.tokens.access.token}`,

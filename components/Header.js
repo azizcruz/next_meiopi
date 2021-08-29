@@ -49,10 +49,14 @@ import FollowingQuestions from "../components/Question/FollowingQuestions/Follow
 import AccountModal from "../components/Forms/Account/AccountModal";
 import { isAuthenticated, userData, logout } from "../auth-services/auth";
 import AccountDrawer from "./Forms/Account/AccountDrawer.js";
+import NotificationsDrawer from "./Notifications/NotificationsDrawer";
 
 export default function Header() {
   const queryClient = useQueryClient();
-  const { setUserLogin } = useStoreActions((actions) => actions);
+  const setLoggedInUserData = useStoreActions(
+    (actions) => actions.setLoggedInUserData
+  );
+  const isLoggedIn = useStoreState((state) => state.isLoggedIn);
   const {
     data: listOfTags,
     isLoading,
@@ -74,7 +78,7 @@ export default function Header() {
     getFollowingQuestions,
   } = useStoreActions((actions) => actions);
 
-  const { filterPostsBy, isLoggedIn } = useStoreState((state) => state);
+  const filterPostsBy = useStoreState((state) => state.filterPostsBy);
 
   if (isErrorFetchingTags) {
     toast({
@@ -100,6 +104,8 @@ export default function Header() {
         />
 
         <AccountDrawer />
+
+        {isLoggedIn && <NotificationsDrawer />}
 
         <FollowingQuestions />
       </NavbarContainer>

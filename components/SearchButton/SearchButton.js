@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { BsSearch } from "react-icons/bs";
 import { AiOutlineEnter } from "react-icons/ai";
-import { BiHash } from "react-icons/bi";
+import { BiHash, BiPoll } from "react-icons/bi";
 import Highlighter from "react-highlight-words";
 import styles from "../../styles/SearchResultsMenuStyles.module.scss";
 
@@ -36,10 +36,11 @@ import * as api from "../../api-services/api";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { useRouter } from "next/router";
+import { FaPoll, FaPollH } from "react-icons/fa";
 
 let options = [];
 
-export default function SearchButton() {
+function SearchButton() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const [searchValue, setSearchValue] = useState("");
@@ -51,7 +52,7 @@ export default function SearchButton() {
     () =>
       api.getQuestions({ page: 0, limit: 30, filterByContent: searchValue }),
     {
-      enabled: searchValue.length > 3 && !isLoading,
+      enabled: searchValue.length >= 3 && !isLoading,
       cacheTime: Infinity,
     }
   );
@@ -65,8 +66,6 @@ export default function SearchButton() {
   const onResultSelect = (option) => {
     router.push(`/questions/${option.id}/${option.slug}?bgColor=#f44336`);
   };
-
-  console.log(data);
 
   useEffect(() => {
     if (!isOpen) {
@@ -145,6 +144,11 @@ export default function SearchButton() {
                     textToHighlight={item.content}
                   />
                 </Box>
+                {item.hasPoll && (
+                  <Box alignSelf={"flex-end"}>
+                    <FaPollH />
+                  </Box>
+                )}
               </ListItem>
             )}
             renderMenu={(items, value, style) => (
@@ -176,8 +180,18 @@ export default function SearchButton() {
               <Spinner size={"lg"} />
             </Center>
           )}
+
+          {searchValue.length < 3 &&
+            searchValue.length > 0 &&
+            data === undefined && (
+              <Center m={4}>
+                <Spinner size={"lg"} />
+              </Center>
+            )}
         </ModalContent>
       </Modal>
     </>
   );
 }
+
+export default React.memo(SearchButton);

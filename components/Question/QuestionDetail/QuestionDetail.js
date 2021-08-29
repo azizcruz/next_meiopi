@@ -36,7 +36,7 @@ export default function QuestionDetail(props) {
   const [userVote, setUserVote] = useState(null);
   const [userHasVoted, setUserHasVoted] = useState(false);
   const toast = useToast();
-
+  const userHashedIp = useStoreState((state) => state.userHashedIp);
   const { fetchFilteredPosts } = useStoreActions((actions) => actions);
 
   const {
@@ -222,9 +222,7 @@ export default function QuestionDetail(props) {
 
     if (toVote) {
       let payload = {
-        hashedIpOrUserId: isAuthenticated()
-          ? userData().id
-          : getVisitorHashedIp(),
+        hashedIpOrUserId: isAuthenticated() ? userData().id : userHashedIp,
         voteOptionId: toVote,
         option: votedOption,
         postId: props.id,
