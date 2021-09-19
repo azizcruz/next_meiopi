@@ -25,11 +25,12 @@ function NotificationsDrawer() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const isLoggedIn = useStoreState((state) => state.isLoggedIn);
+  const userData = useStoreState((state) => state.userData);
   const [isNewNotifications, setIsNewNotifications] = useState(false);
 
   const { data, isLoading, isError, isSuccess, isFetching } = useQuery(
     "notifications",
-    () => api.getNotifications({ userId: userData().id || "" })
+    () => api.getNotifications({ userId: userData.id || "" })
   );
 
   if (isSuccess) {

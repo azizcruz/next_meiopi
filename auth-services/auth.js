@@ -1,27 +1,16 @@
 import cookie from "react-cookies";
+import store from './../store/store'
 
 export const logout = () => {
   cookie.remove("signInUser");
 };
 export const isAuthenticated = () => {
-  if (
-    cookie.load("signInUser") &&
-    cookie.load("signInUser").username &&
-    cookie.load("signInUser").token
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  return store.getState().isLoggedIn
 };
 export const userData = () => {
-  if (cookie.load("signInUser") && cookie.load("signInUser").username) {
-    return {
-      id: cookie.load("signInUser").id,
-      username: cookie.load("signInUser").username,
-      token: cookie.load("signInUser").token,
-      refresh: cookie.load("signInUser").refresh,
-    };
+  
+  if (store.getState().userData) {
+    return store.getState().userData
   } else {
     return {};
   }

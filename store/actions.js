@@ -30,6 +30,18 @@ export default {
 
   // ======
 
+  removeFollowingQuestion: action((state, payload) => {
+    let currentList = [...state.followingQuestions];
+
+    currentList = currentList.filter((item ) => item.questionId !== payload) 
+    
+    state.followingQuestions = currentList;
+    localStorage.setItem("followingQuestions", JSON.stringify(currentList));
+  }),
+
+
+  // ======
+
   setUserLogin: action((state, payload) => {
     state.isLoggedIn = payload;
   }),

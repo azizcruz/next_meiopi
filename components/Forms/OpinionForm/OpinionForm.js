@@ -14,6 +14,7 @@ import {
   Box,
   useToast,
   toast,
+  Spinner,
 } from "@chakra-ui/react";
 import { useQuery, useQueryClient, useMutation } from "react-query";
 import * as api from "../../../api-services/api";
@@ -30,6 +31,7 @@ export default function CommentForm(props) {
     mutate: addOpinion,
     isError,
   } = useMutation(api.addOpinion, {
+    onMutate: (data) => {},
     onSuccess: (data) => {
       setRemain(300);
       setCommentContent("");
@@ -40,7 +42,10 @@ export default function CommentForm(props) {
         duration: 2000,
         isClosable: true,
       });
-      props.onCommentAdd(data._id);
+      let addedComments = document.querySelectorAll(".opinions-wrapper");
+      if (addedComments.length > 0) {
+        props.onCommentAdd(data._id);
+      }
     },
   });
 
@@ -81,6 +86,7 @@ export default function CommentForm(props) {
       <Button
         onClick={onOpen}
         backgroundColor={"#ff9f1c"}
+        fontSize={['sm', 'md', 'lg']}
         border={
           props.buttonWithBorder ? "2px solid black" : "2px solid #ff9f1c"
         }

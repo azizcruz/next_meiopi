@@ -18,6 +18,7 @@ import OpenedCommentsButton from "../OpenedOpinionsButton/OpenedOpinionsButton";
 import AddToFollowingsButton from "../AddToFollowingButton/AddToFollowingButton";
 import styles from "../../../styles/Home.module.scss";
 import * as api from "../../../api-services/api";
+import store from '../../../store/store'
 import {
   isAuthenticated,
   userData,
@@ -28,10 +29,12 @@ import { useStoreState } from "easy-peasy";
 
 function QuestionCard(props) {
   const userHashedIp = useStoreState((state) => state.userHashedIp);
+  const isLoggedIn = useStoreState((state) => state.isLoggedIn);
   const [backgroundColor, setBackgroundColor] = useState("");
   const [options, setOptions] = useState([]);
   const [userVote, setUserVote] = useState(null);
   const [userHasVoted, setUserHasVoted] = useState(false);
+  const [count, setCount] = useState(0)
 
   const toast = useToast();
 
@@ -180,6 +183,8 @@ function QuestionCard(props) {
       return "";
     }
   };
+
+
 
   return (
     <>

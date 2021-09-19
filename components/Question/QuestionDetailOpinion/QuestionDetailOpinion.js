@@ -96,7 +96,7 @@ export default function PostDetailOpinion(props) {
       if (userHashedIp || isAuthenticated()) {
         submitAgreeWith({
           commentId: props._id,
-          userIpOrId: isAuthenticated() ? userData().id : hashedIp,
+          userIpOrId: isAuthenticated() ? userData().id : userHashedIp,
         });
       }
     } catch (error) {

@@ -41,6 +41,8 @@ import CreateAccountButton from "./Forms/RegisterForm/CreateAccountButton";
 import LoginButton from "./Forms/LoginForm/LoginButton";
 import IdleTimer from "react-idle-timer";
 
+import router from 'next/router'
+
 import NavbarContainer from "../components/BottomNavbar/NavbarContainer";
 import Nav from "../components/BottomNavbar/Nav";
 import { useQuery, useQueryClient, useMutation } from "react-query";
@@ -101,6 +103,7 @@ export default function Header() {
         <Nav
           title={"Home"}
           icon={<AiFillHome color={"#ff9f1c"} size={[30]} display={"inline"} />}
+          onClick={() => router.push('/')}
         />
 
         <AccountDrawer />

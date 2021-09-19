@@ -36,6 +36,7 @@ export default function QuestionDetail(props) {
   const [userVote, setUserVote] = useState(null);
   const [userHasVoted, setUserHasVoted] = useState(false);
   const toast = useToast();
+  const isLoggedIn = useStoreState((state) => state.isLoggedIn);
   const userHashedIp = useStoreState((state) => state.userHashedIp);
   const { fetchFilteredPosts } = useStoreActions((actions) => actions);
 
@@ -195,6 +196,38 @@ export default function QuestionDetail(props) {
     );
   }
 
+  const showPoll = (hasPoll) => {
+    if (!hasPoll) {
+      return "";
+    } else {
+      if (!userHasVoted) {
+        return (
+          <Poll
+            question={openedPost.poll && openedPost.poll.question}
+            answers={openedPost.poll && openedPost.poll.options}
+            onVote={(option) =>
+              submitVotePoll(openedPost.poll.options, option, openedPost.postId)
+            }
+            noStorage={true}
+            vote={checkIfUserVoted(openedPost.poll.votedUsers)}
+          />
+        );
+      } else {
+        return (
+          <Poll
+            question={openedPost.poll && openedPost.poll.question}
+            answers={options}
+            onVote={(option) =>
+              submitVotePoll(openedPost.poll.options, option, openedPost.postId)
+            }
+            noStorage={true}
+            vote={userVote}
+          />
+        );
+      }
+    }
+  };
+
   const goToOpinion = (url) => {
     setTimeout(() => {
       let querySet = new URLSearchParams(url);
@@ -298,27 +331,7 @@ export default function QuestionDetail(props) {
         </Text>
         <Box>
           <Box className={styles["poll-wrapper"]}>
-            {openedPost.hasPoll && !userHasVoted ? (
-              <Poll
-                question={openedPost.poll && openedPost.poll.question}
-                answers={openedPost.poll && openedPost.poll.options}
-                onVote={(option) =>
-                  submitVotePoll(openedPost.poll.options, option, props.id)
-                }
-                noStorage={true}
-                vote={checkIfUserVoted(openedPost.poll.votedUsers)}
-              />
-            ) : (
-              <Poll
-                question={openedPost.poll && openedPost.poll.question}
-                answers={options}
-                onVote={(option) =>
-                  submitVotePoll(openedPost.poll.options, option, props.id)
-                }
-                noStorage={true}
-                vote={userVote}
-              />
-            )}
+            {showPoll(openedPost.hasPoll)}
           </Box>
         </Box>
         <Box mt={"5"} fontSize={["xs", "sm", "md", "lg"]}>
@@ -344,7 +357,7 @@ export default function QuestionDetail(props) {
             })}
         </Box>
 
-        {openedPost && openedPost.comments.length > 10 && (
+        {openedPost && openedPost.comments.length > 5 && (
           <Box
             w={"100%"}
             display={"flex"}
@@ -353,7 +366,7 @@ export default function QuestionDetail(props) {
             top={4}
           >
             <OpinionForm
-              buttonWidth={"100px"}
+              buttonWidth={['120px', '150px']}
               postId={props.id}
               buttonWithBorder={true}
               fromPostDetail={true}
@@ -408,7 +421,7 @@ export default function QuestionDetail(props) {
         {openedPost && openedPost.comments.length > 0 && (
           <Box w={"100%"} display={"flex"} justifyContent={"center"} mt={3}>
             <OpinionForm
-              buttonWidth={"100px"}
+              buttonWidth={['120px', '150px']}
               postId={props.id}
               buttonWithBorder={true}
               fromPostDetail={true}
@@ -416,16 +429,14 @@ export default function QuestionDetail(props) {
                 if (openedPost.comments.length > 3) {
                   let addedComments =
                     document.querySelectorAll(".opinions-wrapper");
-
                   let lastComment = addedComments[addedComments.length - 1];
-
                   setTimeout(() => {
                     lastComment.scrollIntoView({
                       behavior: "smooth",
                       block: "center",
                       inline: "nearest",
                     });
-                  }, 500);
+                  }, 0);
                 }
               }}
             />
